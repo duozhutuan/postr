@@ -79,7 +79,14 @@ def one2one(e):
     db.create_one2one(e['id'])
     
     if e['kind'] == 4:
-      print("message kind 4")
+      content = nip04.decrypt(e['content'],pkey.raw_secret, e['pubkey'])
+      relay_key = find_key_by_tags(e['tags'])
+      if relay_key is None:
+        return 
+      e['content'] = content
+      print("收到一个信息:",e['id'],"转发到",e['tags'],) 
+      forward_message(nkey,e)
+
     elif e['kind'] == 1059:
       relay_key = find_key_by_tags(e['tags'])
       if relay_key is None:
