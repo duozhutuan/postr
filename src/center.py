@@ -37,18 +37,30 @@ r.connect(5)
 
 welcome_msg= """你好！
 
-这是一条来自 Postr 的消息。一位匿名用户通过我向你发送了一条加密信息，她/他希望与你成为朋友。
-你是否愿意接受这份邀请？
-如果愿意，请直接回复本条信息，我将帮助你们建立一条私密的双向通信通道，确保你们的交流安全且隐秘。
-
-如果不愿意请忽略此消息。
+这是来自 Postr 的一则重要消息。有一位匿名用户委托我向您传递一条加密信息，表达了与您结交为友的诚挚意愿。
+不知您是否愿意接纳这份友好的邀约呢？倘若您有意结交，只需直接回复此消息，我会即刻为您搭建一条私密的双向通信渠道，
+全方位保障您交流内容的安全与隐秘。
+若您并无此意，忽略此消息即可。
 
 对方原始消息：
 
-%s
+“%s”
 
 -----
 From Postr
+"""
+
+replymsg="""
+你好, 
+   我的老板 Postr 安排我为你结识一位新朋友牵线搭桥。我已经把相关信息转达给对方了。待对方给出回应，我会第一时间传达给你。
+请放心，后续我会全程做好你们之间的沟通桥梁，及时准确地为你们转发消息。
+
+你的原始消息：
+---
+“%s”
+
+来自postr的小弟。
+
 """
 
 def detect_lang(text):
@@ -85,6 +97,7 @@ def find_new_friend_for_user(content,pubkey,eventid):
   db.create_relay(nkey.public_key,pubkey,user[1])
   db.create_newkey(nkey)
   send_message_user1(nkey,user[1],welcome_msg%content)
+  send_message_user1(nkey,pubkey,replymsg%content)
 
 
 def decrypt_1059(e):
