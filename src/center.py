@@ -96,8 +96,11 @@ def send_message_user1(nkey,pubkey,content):
   r.Privkey = n1key 
   r.publish(event1059)
 
-
+ 
 def find_new_friend_for_user(content,pubkey,eventid):
+  # postr itself
+  if pubkey == str(pkey.public_key):
+    return 
   if db.get_event(eventid):
     return 
 
