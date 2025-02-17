@@ -16,6 +16,11 @@ import dmevent
 import queue
 import json
 import time
+
+import os
+import signal
+import sys
+
 task = queue.Queue()
 
 from config import relays 
@@ -25,6 +30,14 @@ pkey = PrivateKey(Keypriv)
 
 print("Your public key: ",pkey.public_key)
 print("Your public key bech32: ",pkey.public_key.bech32())
+
+# 定义信号处理函数，用于重启程序
+def restart_program(signum, frame):
+    os.execv(sys.executable, [sys.executable,"-u"] + sys.argv)
+
+
+signal.signal(signal.SIGALRM, restart_program)
+signal.alarm(60 * 10)
 
 
 filters    = {"kinds":[4,1059], "#p": [str(pkey.public_key)],"limit":10}

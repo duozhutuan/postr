@@ -24,7 +24,7 @@ import sys
 log.blue("程序开始启动")
 # 定义信号处理函数，用于重启程序
 def restart_program(signum, frame):
-    os.execv(sys.executable, [sys.executable] + sys.argv)
+    os.execv(sys.executable, [sys.executable,"-u"] + sys.argv)
 
 
 signal.signal(signal.SIGALRM, restart_program)
@@ -73,18 +73,36 @@ def forward_message(nkey,event14):
     r.Privkey = n1key 
     r.publish(event1059)
 
+def time_since(created_at):
+    now = time.time()
+    time_difference = now - created_at
+
+    seconds = int(time_difference)
+    minutes = seconds // 60
+    hours = minutes // 60
+    days = hours // 24
+
+    print(f"信息：{days}天 {hours % 24}小时 {minutes % 60}分钟 {seconds % 60}秒 之前")
+
+
 def one2one(e):
+
     if db.get_one2one(e['id']):
         return 
     db.create_one2one(e['id'])
     
     if e['kind'] == 4:
-      content = nip04.decrypt(e['content'],pkey.raw_secret, e['pubkey'])
+      
       relay_key = find_key_by_tags(e['tags'])
       if relay_key is None:
-        return 
+        return
+      result = db.get_newkey(relay_key)
+      privkey = result[1]
+      nkey = PrivateKey(bytes.fromhex(privkey)) 
+
+      content = nip04.decrypt(e['content'],nkey.raw_secret, e['pubkey'])  
       e['content'] = content
-      print("收到一个信息:",e['id'],"转发到",e['tags'],) 
+      print("收到一个信息 4:",e['id'],"转发到",e['tags'],) 
       forward_message(nkey,e)
 
     elif e['kind'] == 1059:
@@ -97,7 +115,7 @@ def one2one(e):
 
       content,pubkey = dmevent.decrypt_1059(e,nkey)
       event14 = json.loads(content)
-      print("收到一个信息:",e['id'],"转发到",e['tags'],)
+      print("收到一个信息 1059:",e['id'],"转发到",e['tags'],)
       forward_message(nkey,event14)
 
        
