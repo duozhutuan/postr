@@ -8,7 +8,7 @@ from nostrclient.actions import like_event
 from nostrclient.key import PublicKey
 from nostrclient.nip19 import encode_bech32
 from nostrclient import bech32
-from nostrclient import nip44
+from nostrclient import nip44,nip04
 from nostrclient.event import Event
 import db
 import dmevent 
